@@ -1724,6 +1724,10 @@ results = results.replace(/(\s*={2,})(.*?)(\[\[|\{\{)(.*?)(\]\]|\}\})(.*?)\1/gm,
         
            if(fontConflict())  {           
                if(confirm(LANG.plugins.ckgedit.font_conflict)) return;
+                 var v = jQuery("#fontdel").val();          
+                 if(!v) {                     
+                     jQuery('#dw__editform').append('<input type="hidden" id="fontdel" name="fontdel" value="del" />');
+                }               
             }
             results = results.replace(/\[\[(.*?)(<font[^\>]+>)([^<]+(\]\])?)[^\>]+\/font>\s*(\]\])/gm, function(m,a,b,c) {             
                 a=a.replace(/\n/gm,"");      
