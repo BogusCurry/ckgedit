@@ -206,7 +206,8 @@ class action_plugin_ckgedit_edit extends DokuWiki_Action_Plugin {
     '/(~~NOCACHE~~|~~NOTOC~~|\{\{rss>http:\/\/.*?\}\})/ms',
      create_function(
                '$matches',
-               '$matches[0] = str_replace("{{rss>http://", "{ { rss>Feed:",  $matches[0]);
+               '$matches[0] = str_replace("{{rss>http://www.", "{ { rss>FEED",  $matches[0]);
+               $matches[0] = str_replace("{{rss>http://", "{ { rss>Feed:",  $matches[0]);
                $matches[0] = str_replace("~", "~ ",  $matches[0]);
                return $matches[0];'
                ),$text);
@@ -230,6 +231,8 @@ class action_plugin_ckgedit_edit extends DokuWiki_Action_Plugin {
       }
       
       if(strpos($text, '%%') !== false || strpos($text, '\\\\') !== false ) {  
+      $text = preg_replace('/%%\s*<nowiki>\s*%%/ms', 'PERCNWPERC',$text);
+      $text = preg_replace('/%%\s*<(code|file)>\s*%%/ms', 'PERC' . "$1" . 'PERC',$text);
         $text = preg_replace_callback(
             "/<(nowiki|code|file)>(.*?)<\/(nowiki|code|file)/ms",
             function ($matches) {
@@ -255,6 +258,7 @@ class action_plugin_ckgedit_edit extends DokuWiki_Action_Plugin {
 
        if($pos !== false) {
 
+/* skipentity support */
         $text = preg_replace_callback(
             '/``(.*?)``/ms',
             function($matches) {          
@@ -370,18 +374,35 @@ class action_plugin_ckgedit_edit extends DokuWiki_Action_Plugin {
        $text = preg_replace($email_regex,"<$1>",$text);
 
        $text = preg_replace('/{{(.*)\.swf(\s*)}}/ms',"__SWF__$1.swf$2__FWS__",$text);
+       $text = preg_replace('/PERCNWPERC/ms', '%%&lt; nowiki &gt;%%',$text);
+       //$text = preg_replace('/%%\s*<(code|file)>\s*%%/ms', 'PERC' . "$1" . 'PERC',$text);
+       $text = preg_replace('/PERCcodePERC/ms','%%&lt;code&gt;%%', $text);
+       $text = preg_replace('/PERCfilePERC/ms','%%&lt;file&gt;%%', $text);
+       $divalign = false;
+       if($this->helper->has_plugin('divalign2_center')) {
+           $divalign = true;
+           $text = preg_replace_callback('/\n([;#]{3})/',
+                                
+                              function ($matches) {  
+                               return "divalNLine" . str_replace('#','CGEHASH',$matches[1]);
+                              },   $text
+            );
+       }
        $this->xhtml = $this->_render_xhtml($text);
 
        $this->xhtml = str_replace("__IWIKI_FSLASH__", "&frasl;", $this->xhtml);
 	   if($this->getConf('duplicate_notes')) {
 			$this->xhtml = preg_replace("/FNoteINSert\d+/ms", "",$this->xhtml);
 	   }
-	  
+      if($divalign) {
+            $this->xhtml = str_replace("CGEHASH", "#", $this->xhtml);           
+      }   
        $this->xhtml = str_replace("__GESHI_QUOT__", '&#34;', $this->xhtml);        
        $this->xhtml = str_replace("__GESHI_OPEN__", "&#60; ", $this->xhtml); 
        $this->xhtml = str_replace('CHEVRONescC', '>>',$this->xhtml);
        $this->xhtml = str_replace('CHEVRONescO', '<<',$this->xhtml);
        $this->xhtml = preg_replace('/_QUOT_/ms','>',$this->xhtml);  // dw quotes     
+       $this->xhtml = str_replace("rss&gt;FEED", "rss>Feed:www.",$this->xhtml); 
 
        if($pos !== false) {
        $this->xhtml = preg_replace_callback(
@@ -550,6 +571,14 @@ $ckeditor_replace =<<<CKEDITOR_REPLACE
                   height: $height,
                  filebrowserWindowWidth: "$fbrowser_width",
                  filebrowserWindowHeight:  "$fbrowser_height", 
+                 on :
+                   {
+                      'instanceReady' : function( evt )
+                      {
+                         evt.editor.document.on( 'mousedown', function()
+                         {   handlekeypress (evt);  } );
+                      }
+                   },  
                  filebrowserImageBrowseUrl :  '$doku_url/lib/plugins/ckgedit/fckeditor/editor/filemanager/browser/default/browser.html?Type=Image&Connector=$doku_url/lib/plugins/ckgedit/fckeditor/editor/filemanager/connectors/php/connector.php',
                  filebrowserBrowseUrl: '$doku_url/lib/plugins/ckgedit/fckeditor/editor/filemanager/browser/default/browser.html?Type=File&Connector=$doku_url/lib/plugins/ckgedit/fckeditor/editor/filemanager/connectors/php/connector.php',                                
                } 

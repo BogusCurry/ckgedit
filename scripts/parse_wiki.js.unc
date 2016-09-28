@@ -508,6 +508,7 @@ function parse_wikitext(id) {
 
             if(tag == 'a') {
            
+  //             if(!confirm(attrs[i].name + '="' + attrs[i].escaped + '"')) exit;
                if(attrs[i].name == 'title') {
                   this.link_title = attrs[i].escaped;        
 				  if(interwiki_class) {
@@ -660,6 +661,7 @@ function parse_wikitext(id) {
                     }
 
                    if(!this.attr && this.link_title) {			
+                   
                        if(matches = this.link_class.match(/media(.*)/)) {
                             this.link_title=decodeURIComponent(safe_convert(this.link_title));					   	
                             this.attr=this.link_title;						
@@ -688,6 +690,10 @@ function parse_wikitext(id) {
                       this.attr = decodeURIComponent ? decodeURIComponent(this.attr) : unescape(this.attr); 
                       this.external_mime = true;
 
+                   }
+                   else if(this.attr && this.attr.match(/%[a-fA-F0-9]{2}/)) {              
+                       this.attr = decodeURIComponent(this.attr);
+                       this.attr = decodeURIComponent(this.attr);              
                    }
 
                    // alert('title: ' + this.link_title + '  class: ' + this.link_class + ' export: ' +this.export_code);
@@ -1559,7 +1565,7 @@ function parse_wikitext(id) {
      
      results=results.replace(/_SMB_/g, "\\");     
      
-     results = results.replace(/(\s*={2,})\s*CKGE_TMP_(\w+)(.*?)\s*CKGE_TMP_c?\2/gm, function(m,tag) {   //remove formats from headers
+     results = results.replace(/(\s*={2,}).*?CKGE_TMP_(\w+)(.*?).*?CKGE_TMP_c?\2.*?\1/gm, function(m,tag) {   //remove formats from headers     
              m=m.replace(/CKGE_TMP_\w+/gm,"");     
              var v = jQuery("#formatdel").val();              
              if(!v) {   
@@ -1572,6 +1578,17 @@ function parse_wikitext(id) {
             return m;
      } );
      
+results = results.replace(/(\s*={2,})(.*?)(\[\[|\{\{)(.*?)(\]\]|\}\})(.*?)\1/gm, function(m,h_markup,whatever,bracket_1,inner,bracket_2, end_str) { 
+            end_str = end_str.replace(/\[\[(.*?)\|(.*?)\]\]/g,"$2");
+            end_str = end_str.replace(/\{\{(.*?)\|(.*?)\}\}/g,"$2");            
+             m=  h_markup + " " + whatever + " " + inner.replace(/.*?\|(.*?)/ ,"$1") + " " + end_str + " " + h_markup;
+             var v = jQuery("#formatdel").val();              
+             if(!v) {   
+             jQuery('#dw__editform').append('<input type="hidden" id="formatdel" name="formatdel" value="del" />');
+             }
+            return m;
+     } );
+          
     if(id == 'test') {
       if(!HTMLParser_test_result(results)) return;     
     }
@@ -1706,6 +1723,16 @@ function parse_wikitext(id) {
             }
             return match;
     } );
+    
+      results = results.replace(/(\s*={2,})\s*(.*?)(<font[^\>]+>)(.*?)(<\/font>)(.*?)\s*\1/gm,function(match) {      
+             match = match.replace(/<\/font>/g," ");
+             match = match.replace(/<font.*?>/g," ");
+             var v = jQuery("#formatdel").val();              
+             if(!v) {   
+             jQuery('#dw__editform').append('<input type="hidden" id="formatdel" name="formatdel" value="del" />');
+             }
+            return match;
+    } );    
    }
    if(HTMLParserTopNotes.length) {
         results = results.replace(/<sup>\(\(\){2,}\s*<\/sup>/g,"");      
@@ -1764,7 +1791,7 @@ function parse_wikitext(id) {
            results += "~~COMPLEX_TABLES~~\n"; 
         }
     }
-    else results = results.replace(/~~COMPLEX_TABLES~~/gm,"")
+    if(!useComplexTables) {    results = results.replace(/~~COMPLEX_TABLES~~/gm,""); }
     results=results.replace(/_CKG_ASTERISK_/gm,'*');      
     results = results.replace(/_ESC_BKSLASH_/g,'\\');
     if(id == 'test') {
@@ -1773,7 +1800,7 @@ function parse_wikitext(id) {
       }
       return; 
     }
-
+  results=results.replace(/divalNLine/gm,"\n")
     var dwform = GetE('dw__editform');
     dwform.elements.fck_wikitext.value = results;
 
@@ -1803,10 +1830,19 @@ jQuery( "#ebtn__delete" ).mouseup(function() {
 
 jQuery( "#ebtn__dwedit" ).click(function() { 
    ckgedit_to_dwedit = true;
-   if(!window.dwfckTextChanged && ckgedit_hasCaptcha) {      
-      jQuery('#dw__editform').append('<input type="hidden" id="ckged_captcha_err" name="ckged_captcha_err" value="hide" />');
+   setDWEditCookie(2, this);
+   parse_wikitext('edbtn__save');
+   this.form.submit();
+});
+
+jQuery("#ebtn__fbswitch").click(function(){
+    if(getCookie('ckgFbOpt') == 'dokuwiki') {
+        document.cookie = 'ckgFbOpt=ckgedit;';
+    } else {
+        document.cookie = 'ckgFbOpt=dokuwiki;';
    }
-   setDWEditCookie(2, this);parse_wikitext('edbtn__save');this.form.submit();
+    parse_wikitext('edbtn__save');
+   this.form.submit();
 });
 
 jQuery( "#ckgedit_draft_btn" ).click(function() { 

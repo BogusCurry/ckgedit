@@ -25,7 +25,7 @@ class renderer_plugin_ckgedit extends Doku_Renderer_xhtml
  * @author Myron Turner <turnermm02@shaw.ca>
  */
     
-    function renderer_plugin_ckgedit() {
+    function __construct() {
       global $conf;
       $this->ver_anteater = mktime(0,0,0,11,7,2010); 
       $this->dwiki_version=mktime(0,0,0,01,01,2008);
@@ -110,9 +110,9 @@ class renderer_plugin_ckgedit extends Doku_Renderer_xhtml
         }
     } 
    
-    function table_open($maxcols = null, $numrows = null, $pos = null){
+    function table_open($maxcols = null, $numrows = null, $pos = null, $classes = NULL){
         $this->doc .= "\n<span class='np_break'>&nbsp;</span>\n";
-        parent::table_open($maxcols = null, $numrows = null, $pos = null);
+        parent::table_open($maxcols, $numrows, $pos,$classes);
     }
     /* 
      * Dokuwiki displays __underlines__ as follows
