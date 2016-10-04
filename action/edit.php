@@ -930,6 +930,14 @@ var ckgedit_hasCaptcha = "<?php echo $this->captcha?1:0?>";
 //  $safe_url = DOKU_URL . 'lib/plugins/ckgedit/scripts/safeFN_cmpr.js';       
 ?>
 
+   <?php
+       global $conf;
+
+       if(isset($conf['animal'])) {
+         echo "var config_animal='" . $conf['animal'] . "';";
+       }
+   ?>
+
 LoadScript(parse_url);
 try {
   if(!window.HTMLParserInstalled){

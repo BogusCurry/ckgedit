@@ -1,4 +1,4 @@
-rev_16-Jun_27-06_22
+rev_16-Sep_27-15_34
 
 28 Feb 2013
 Added support for interwiki links
@@ -931,4 +931,66 @@ Moved end notes check back to original position at l.1109
 
 27 Jun
 Updated DW Korean lang files
+
+27 June
+Fix for singleton nowiki/code/file escaped with double percent markup
+
+
+12 Jul
+re-size filebrowser inner windows vs just external popup size
+
+19 Jul
+Synced renderer.php:table_open with updated (declaration for) Doku_Renderer_xhtml::table_open
+Fixed bug in table_open call to parent.
+Changed renderer constructor to __construct
+
+7 Aug
+Fixed bug in parse_wiki which removed ~~COMPLEX_TABLES~~ macro when not intended
+
+22 Aug
+Fixed backup_area tex-align css and corrected ckgeditLite to ckgedit in backup message (helper.php)
+
+23 Aug
+Fix for javascript issue in Safari which prevented dw priority from update using update profile form
+
+24 Aug
+Fixed rss syntax which uses http://www.whatever instead of http://whatever
+
+2 Sept
+Fixes in frmresourceslilst.html for no-Ascii names
+
+4 Sept
+Copy userfiles/.htacess.security to data/media/.htacess for winstyle
+
+10 Sept
+Improved markup detection in headers
+
+11 Sept
+Capture and delete font markup in headers
+
+12 Sept
+added jQuery("#ebtn__fbswitch").click function to parse_wiki.js to ease later upgrade
+improved font removal from headers
+remove link markup from headers
+
+13 Sept
+Rixed type ref error in parse_wiki
+
+14 Sept
+Added onfocus handler for ckeditor, which serves in place of unresponsive mousedown
+
+16 Sept
+Found fix for mouse down, passed into editor on initialization in edit.php
+
+17 Sept
+Merged Stev G's headers plugin; added back ckeditor/config.js.unc and compressed config.js.
+
+20 Sept
+Support for divalign2;  new function in helper.php for syntax plugin detection
+
+24 Sept
+adds missing initial forward slash when in frmresourselist.html browser listings; occurs in Centos 7 Apache 2.4
+
+
+
 
