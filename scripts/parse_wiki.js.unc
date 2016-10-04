@@ -1132,7 +1132,7 @@ function parse_wikitext(id) {
        this.link_only=false;
        return;
     }
-    
+  
     if(!markup[tag]) return; 
 
      if(tag == 'sup' && this.attr == 'dwfcknote') {         
@@ -1825,7 +1825,7 @@ results = results.replace(/(\s*={2,})(.*?)(\[\[|\{\{)(.*?)(\]\]|\}\})(.*?)\1/gm,
 }
 
 jQuery(document).ready(function() {
-
+  
  jQuery( "#ebut_test" ).mousedown(function() { 
   parse_wikitext('test');
 });
