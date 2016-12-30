@@ -326,5 +326,4 @@ function auth_cleanUser($user) {
   
 function auth_cleanGroup($group) {
         return $group;
-    }  
-    
+    }
