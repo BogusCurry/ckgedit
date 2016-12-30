@@ -1,4 +1,4 @@
-rev_16-Nov_18-12_04
+rev_16-Dec_30-09_55
 Switched dafault filebrowser settings to all and ckgedit
 
 28 Feb 2013
@@ -975,3 +975,6 @@ removed faulty regex from parse_wiki::fontConflict()
 
 18 Nov
 Fixed faulty HTML in user profile update 
+
+30 Dec
+Synch of ckgedit with ckgdoku
